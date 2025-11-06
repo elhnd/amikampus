@@ -1,0 +1,256 @@
+
+############################################################
+# FEUILLE DE ROUTE PAR ITÉRATIONS – PLATEFORME AMIKAMPUS
+# Objectif : Décomposer la livraison en incréments maîtrisés maximisant la valeur.
+# Format : Chaque itération = Objectifs, Périmètre, Exclusions, Dépendances, Critères d’acceptation.
+############################################################
+
+## ITERATION 0 – FONDATIONS TECHNIQUES
+Objectifs :
+- Initialiser repository, structure projet Symfony, configuration Docker/FrankenPHP.
+- Mettre en place authentification basique (email + mot de passe), migration DB, gestion .env.
+- Définir modèle de données minimal (members, roles, member_roles).
+Périmètre :
+- Commande création user admin.
+- Endpoint login / register simple (sans OTP).
+- Sécurité (JWT ou session + refresh minimal).
+Exclusions : OTP, vérification documents, vote, import.
+Dépendances : Choix stack (DB: MySQL/PostgreSQL), librairie security Symfony.
+Critères d’acceptation :
+- Un admin peut se connecter et créer un membre via API.
+- Structure entités validée + migrations exécutables.
+- Documentation README de démarrage.
+
+## ITERATION 1 – INSCRIPTION SIMPLE (SANS OTP)
+Objectifs :
+- Mettre en place l’inscription de base sans activation par OTP.
+- Compte actif par défaut avec statut initial non_vérifié.
+Périmètre :
+- Endpoint POST /auth/register (email ou téléphone + mot de passe).
+- Validations serveur : unicité email/téléphone, règles minimales de mot de passe.
+- Endpoint POST /auth/login.
+- Rate limiting sur création de compte et login.
+Exclusions : Activation/OTP, vérification des documents justificatifs, carte membre, import Excel.
+Dépendances : Aucune dépendance externe obligatoire (email/WhatsApp non requis à ce stade).
+Critères d’acceptation :
+- Un utilisateur peut créer un compte et se connecter.
+- Les doublons d’email/téléphone sont refusés avec message clair.
+- Les validations côté serveur sont en place (formats, contraintes).
+
+## ITERATION 1.5 – ACTIVATION DE COMPTE PAR OTP
+Objectifs :
+- Ajouter l’activation de compte par OTP (email et/ou WhatsApp).
+Périmètre :
+- Génération OTP (6 chiffres, expiration configurable).
+- Endpoint /auth/verify-otp.
+- Rate limiting sur génération OTP et vérification.
+Exclusions : Vérification des documents justificatifs, carte membre, import Excel.
+Dépendances : Service d’envoi email, abstraction canal WhatsApp (intégration réelle ultérieure).
+Critères d’acceptation :
+- Un utilisateur reçoit un OTP et active son compte.
+- OTP expiré → activation refusée.
+- Journal des tentatives OTP consultable par l’admin.
+
+## ITERATION 2 – VÉRIFICATION DOCUMENTAIRE & STATUTS
+Objectifs :
+- Permettre upload justificatifs et transition vers vérifié_étudiant ou vérifié_alumni.
+Périmètre :
+- Upload multi-fichiers (types validés : PDF/JPG/PNG).
+- Génération hash fichier, stockage chemin.
+- Interface validation (admin / vérificateur): accepter / rejeter avec motif.
+- Blocage modification champs sensibles après vérification.
+Exclusions : OCR, automatisation, notifications avancées.
+Dépendances : Stockage (local / S3), module authentification déjà fonctionnel.
+Critères d’acceptation :
+- Passage automatique en vérifié_étudiant si certificat étudiant fourni; sinon vérifié_alumni.
+- Tentative modification nom après vérification → refus.
+- Rejet document affiche motif.
+
+## ITERATION 3 – RÔLES & BUREAU DE L’AMICAL
+Objectifs :
+- Gestion rôle Président, Secrétaire, etc. via assignation manuelle (pré-élections).
+Périmètre :
+- CRUD roles + association member_roles avec dates.
+- Badge affiché dans profil.
+Exclusions : Attribution automatique post-élection.
+Dépendances : Itération 2 (statuts fiables), Itération 0 (entités roles).
+Critères d’acceptation :
+- Admin peut ajouter rôle à un membre et définir durée.
+- Expiration rôle se reflète (badge retiré).
+
+## ITERATION 4 – ÉLECTIONS (MVP VOTE EN LIGNE)
+Objectifs :
+- Mettre en place création élection, candidature simple, vote en ligne secret basique.
+Périmètre :
+- Entités elections, candidates, votes (hash_anonyme).
+- Endpoint création élection (admin), dépôt candidature, validation candidature.
+- Vote en ligne (un vote par membre vérifié), pas de modification.
+Exclusions : Vote physique, supervision, fraude avancée, modification vote.
+Dépendances : Itération 2 (membres vérifiés), Itération 3 (rôles basiques si besoin).
+Critères d’acceptation :
+- Un candidat validé apparaît dans liste.
+- Un membre vérifié vote → enregistrement hash_anonyme.
+- Tentative deuxième vote → refus.
+- Résultats agrégés accessibles après clôture.
+
+## ITERATION 5 – AMÉLIORATION VOTE (MODIFICATION & SUPERVISION)
+Objectifs :
+- Autoriser modification unique du vote et introduire superviseurs.
+Périmètre :
+- Flag has_modified sur vote.
+- Rôle superviseur + tableau d’anomalies simples (ex nombre votes/min).
+Exclusions : Vote physique, prévention double vote hybride.
+Dépendances : Itération 4 (MVP vote en ligne).
+Critères d’acceptation :
+- Modification vote possible une seule fois si paramètre election.allow_vote_edit activé.
+- Tableau supervision listant total votes, modifications effectuées.
+
+## ITERATION 6 – HYBRIDATION VOTE (PHYSIQUE + EN LIGNE)
+Objectifs :
+- Gestion canal physique + prévention double vote.
+Périmètre :
+- Ajout champ canal sur vote.
+- Scan QR pour vote physique (interface opérateur simple).
+- Vérification conflit (physique + en ligne) avec statut « conflit ».
+Exclusions : Synchronisation temps réel avancée (Kafka), résolution automatisée.
+Dépendances : Itération 4 & 5 (vote en ligne stable).
+Critères d’acceptation :
+- Vote physique enregistré bloque vote en ligne ultérieur.
+- Conflit détecté si ordre inversé → liste dans supervision.
+
+## ITERATION 7 – ATTRIBUTION AUTOMATIQUE BUREAU POST-ÉLECTION
+Objectifs :
+- Automatiser attribution Président au vainqueur.
+Périmètre :
+- Calcul vainqueur (max voix). Création entrée member_roles.
+- Notification administrateur + membre.
+Exclusions : Nomination automatique autres rôles (reste manuel).
+Dépendances : Itération 4 (résultats fiables), Itération 3 (rôles techniques).
+Critères d’acceptation :
+- Clôture élection → rôle Président attribué au gagnant.
+- Badge visible immédiatement.
+
+## ITERATION 8 – IMPORT MASSIF & OPTIMISATION INSCRIPTION
+Objectifs :
+- Permettre import Excel pour accélérer on-boarding.
+Périmètre :
+- Upload fichier .xlsx + validation colonnes.
+- Pré-création comptes en statut non_vérifié + envoi lien activation.
+Exclusions : Déduplication fuzzy avancée.
+Dépendances : Auth & vérification (Itérations 1–2).
+Critères d’acceptation :
+- Fichier avec colonnes correctes → création en lot.
+- Rapport erreurs (lignes invalides).
+
+## ITERATION 9 – CARTE MEMBRE & QR CODE
+Objectifs :
+- Générer carte avec QR + statut paiement.
+Périmètre :
+- Endpoint génération QR signé (HMAC).
+- Enregistrement paiement (stub / faux module pour tests).
+Exclusions : Intégration wallets Apple/Android réelle (phase ultérieure).
+Dépendances : Membre vérifié (Itération 2).
+Critères d’acceptation :
+- QR scanné retourne identité publique + statut vérification.
+- Paiement « payé » débloque génération.
+
+## ITERATION 10 – NOTIFICATIONS & RAPPELS
+Objectifs :
+- Automatiser rappels renouvellement statut étudiant & confirmations actions clés.
+Périmètre :
+- Cron interne (commande Symfony) + table notifications.
+- Envoi email + log statut.
+Exclusions : Multi-canal avancé (WhatsApp réel, push PWA).
+Dépendances : Statuts (Itération 2), vote (Itération 4–6).
+Critères d’acceptation :
+- Tâche planifiée génère notifications renouvellement.
+- Confirmation vote envoyée sans divulguer choix.
+
+## ITERATION 11 – PWA & OFFLINE DE BASE
+Objectifs :
+- Améliorer UX mobile + accès partiel hors ligne.
+Périmètre :
+- Manifest.json, Service Worker cache profils & listes candidats.
+Exclusions : Synchronisation offline votes.
+Dépendances : Interface front existante (selon stack SPA ou Twig + progressive).
+Critères d’acceptation :
+- Installation possible sur mobile.
+- Accès hors ligne à profil + dernière liste élections.
+
+## ITERATION 12 – SUPERVISION AVANCÉE & ANTI-FRAUDE
+Objectifs :
+- Détection anomalies plus fines & alertes.
+Périmètre :
+- Seuil votes/minute, suspicion double vote non résolu, export audit.
+Exclusions : ML / détection comportementale.
+Dépendances : Itérations 5–6.
+Critères d’acceptation :
+- Tableau supervision affiche alertes codées (niveau, timestamp).
+- Export CSV audit.
+
+## ITERATION 13 – MODULES SERVICES (DÉBUT)
+Objectifs :
+- Lancer premier module : Trésorerie ou Logements (à décider business).
+Périmètre (ex Trésorerie) :
+- Enregistrements transactions simples (cotisation, paiement carte). Sommes agrégées.
+Exclusions : Comptabilité complète, multi-devise.
+Dépendances : Paiement carte (Itération 9), rôles admin.
+Critères d’acceptation :
+- Tableau des entrées / sorties + solde.
+- Filtre par période.
+
+## ITERATION 14 – EXTENSIONS MODULES (Événements, Ressources, Dons)
+Objectifs :
+- Ajouter création d’événements + inscription participants.
+Périmètre :
+- CRUD événements, capacité, liste participants.
+- Section ressources pédagogiques (catégories + upload docs). 
+Exclusions : Streaming vidéo, réservation complexe.
+Dépendances : Base membres stable.
+Critères d’acceptation :
+- Un membre vérifié s’inscrit à un événement.
+- Ressource téléversée catégorisée consultable.
+
+## ITERATION 15 – OPTIMISATION & POLISH FINAL
+Objectifs :
+- Réduire dette technique, améliorer performances et sécurité.
+Périmètre :
+- Index DB optimisés, cache résultats élection, amélioration logs RGPD.
+Exclusions : Refactor majeur architecture.
+Dépendances : Toutes précédentes.
+Critères d’acceptation :
+- Tests de charge basiques OK (ex 500 votes en < 1 min sans blocage).
+- Latence < définie pour endpoints critiques.
+
+## SYNTHÈSE DÉPENDANCES MAJEURES
+- Vérification (Itération 2) précède Vote (Itération 4+).
+- Vote en ligne stable avant hybridation (Itération 6).
+- Attribution automatique (Itération 7) après résultats fiables.
+- Paiement (Itération 9) avant Trésorerie (13) si utilisée pour carte.
+ - Si activation OTP implémentée (Itération 1.5), elle précède idéalement la vérification documentaire (Itération 2).
+
+## KPI PAR ITÉRATION (EXTRAITS)
+- 1 : Taux de création de compte (inscriptions), taux d’erreur de validation.
+- 1.5 : Taux d’activation OTP.
+- 2 : Délai moyen validation docs.
+- 4–6 : % membres votants / vérifiés.
+- 6 : Nombre conflits vote résolus vs détectés.
+- 9 : Taux adoption carte / membres vérifiés.
+- 13 : Volume transactions / mois.
+
+## BACKLOG PARKING (HORS ITÉRATIONS ACTUELLES)
+- OCR documents (automatisation partielle).
+- Wallet Apple/Google Pass intégration.
+- Système réputation & gamification avancée.
+- Chat interne / forum.
+- Export API publique transparente statistiques.
+
+## CRITÈRES TRANSVERSAUX QUALITÉ
+- Tests unitaires couverture > 60% sur domaine critique (auth, vote, vérification) avant Itération 10.
+- Lint & CI passent avant déploiement production incrémental.
+- Logs audit immuables (append-only) pour vote et rôles.
+
+############################################################
+# FIN FEUILLE DE ROUTE
+############################################################
+
