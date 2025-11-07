@@ -583,3 +583,18 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 **Prochaines étapes** : Commencer l'Itération 0 avec l'architecture hexagonale et l'authentification de base. Prêt à démarrer ? 🚀
 
 **Rappel** : Le multi-tenant est en stand-by. Focus sur une application simple et fonctionnelle pour une seule amicale d'abord.
+
+
+# Stack Technique
+Frontend:
+  - Symfony UX (Stimulus, Turbo, Live Components)
+  - Tailwind CSS (styling moderne)
+  - Alpine.js (interactions légères)
+  - Twig (templating)
+  
+Avantages:
+  - Performance optimale
+  - Progressive Enhancement
+  - SEO-friendly
+  - Maintenance simplifiée
+  - Mobile-first responsive
