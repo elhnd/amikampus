@@ -23,7 +23,7 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 
 #### Périmètre
 - [x] Structure Symfony + Docker/FrankenPHP configuré
-- [ ] Architecture hexagonale en place
+- [x] Architecture hexagonale en place
 - [ ] Authentification basique (email + mot de passe)
 - [ ] Modèle de données minimal (members, roles, member_roles)
 - [ ] Migrations DB + gestion .env
