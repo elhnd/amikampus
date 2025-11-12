@@ -9,8 +9,8 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 ## 🏗️ Architecture Technique
 
 - **Framework** : Symfony 7.3 avec FrankenPHP
-- **Architecture** : Hexagonale (Clean Architecture)
-- **Frontend** : Twig (Phase 1) → Angular/React (Phase 2)
+- **Architecture** : Architecture MVC classique de Symfony
+- **Frontend** : Symfony UX (Stimulus, Turbo), Twig, Tailwind CSS, Alpine.js
 - **Base de données** : PostgreSQL (ou MySQL)
 - **Conteneurisation** : Docker avec Caddy
 - **Sécurité** : Symfony Security + JWT pour API future
@@ -23,7 +23,7 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 
 #### Périmètre
 - [x] Structure Symfony + Docker/FrankenPHP configuré
-- [x] Architecture hexagonale en place
+- [x] Architecture MVC classique en place
 - [ ] Authentification basique (email + mot de passe)
 - [ ] Modèle de données minimal (members, roles, member_roles)
 - [ ] Migrations DB + gestion .env
@@ -39,6 +39,7 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 ✅ Un admin peut se connecter
 ✅ Structure entités validée + migrations exécutables
 ✅ Documentation README de démarrage
+✅ Structure MVC : Controllers, Entities, Repositories, Services
 
 ---
 
@@ -417,11 +418,44 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 | 13 | Trésorerie | 2 sem | 📋 Planifié |
 | 14 | Événements | 2 sem | 📋 Planifié |
 | 15 | Optimisation | 2 sem | 📋 Planifié |
-
 **Total estimé : ~23 semaines (5-6 mois)**
 
-**Note** : Voir [ARCHITECTURE.md](ARCHITECTURE.md) pour les détails techniques complets de l'architecture hexagonale et les exemples de code.
+---
 
+## 🏛️ Structure du Projet (Architecture MVC Symfony)
+
+```
+src/
+├── Controller/          # Contrôleurs (gestion des requêtes HTTP)
+├── Entity/             # Entités Doctrine (modèles de données)
+├── Repository/         # Repositories (accès aux données)
+├── Service/            # Services métier (logique applicative)
+├── Form/               # Formulaires Symfony
+├── Security/           # Authentification et autorisations
+└── Kernel.php
+
+config/
+├── packages/           # Configuration des bundles
+├── routes/             # Configuration des routes
+└── services.yaml       # Configuration des services
+
+templates/              # Templates Twig
+├── base.html.twig
+├── member/
+├── election/
+└── ...
+```
+
+### Organisation des Responsabilités
+
+- **Controllers** : Gèrent les requêtes HTTP, valident les entrées, appellent les services
+- **Entities** : Modèles de données avec annotations Doctrine
+- **Repositories** : Requêtes personnalisées vers la base de données
+- **Services** : Logique métier réutilisable (ex: ElectionService, MemberService)
+- **Forms** : Validation et transformation des données de formulaires
+- **Security** : Voters, authenticators, guards
+
+---
 ---
 
 ## 🎨 Fonctionnalités Principales
@@ -516,21 +550,22 @@ AmikAmpu est une plateforme de gestion complète pour les amicales étudiantes. 
 - **Volume transactions** : Nombre/mois
 - **Taux paiement** : % cotisations payées
 - **Délai moyen** : Validation paiements
-
-### Métriques Techniques
-- **Performance** : Temps de réponse endpoints
-- **Disponibilité** : Uptime système
-- **Tests** : Couverture > 60% domaine critique
+### Évolution Architecture
+- 🏢 **Multi-tenant** : Support plusieurs amicales
+- 🔄 **API Platform** : REST/GraphQL standardisé
+- ⚡ **Messenger** : Bus de messages asynchrone
+- 🎯 **CQRS léger** : Séparation lecture/écriture si nécessaireine critique
 - **Sécurité** : Tentatives d'accès non autorisées
 
 ## 🚀 Déploiement
 
 ### Environnements
-- **Développement** : Docker local avec FrankenPHP
-- **Staging** : Environnement de test
-- **Production** : Cloud (AWS/GCP/DigitalOcean)
-- **CI/CD** : GitHub Actions ou GitLab CI
-
+### Tests
+- **Couverture > 60%** : Sur domaine critique (auth, vote, vérification)
+- **Tests unitaires** : Services et logique métier
+- **Tests fonctionnels** : Controllers et routes
+- **Tests intégration** : Repositories et base de données
+- **Tests E2E** : Parcours utilisateur critiques (Panther)
 ### Stack Production
 - **Serveur** : FrankenPHP + Caddy (HTTPS auto)
 - **Base de données** : PostgreSQL/MySQL managée

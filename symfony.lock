@@ -23,7 +23,7 @@
         ]
     },
     "doctrine/doctrine-migrations-bundle": {
-        "version": "3.5",
+        "version": "3.6",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -33,6 +33,21 @@
         "files": [
             "config/packages/doctrine_migrations.yaml",
             "migrations/.gitignore"
+        ]
+    },
+    "phpunit/phpunit": {
+        "version": "12.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "11.1",
+            "ref": "1117deb12541f35793eec9fff7494d7aa12283fc"
+        },
+        "files": [
+            ".env.test",
+            "phpunit.dist.xml",
+            "tests/bootstrap.php",
+            "bin/phpunit"
         ]
     },
     "symfony/console": {
