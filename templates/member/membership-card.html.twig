@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Carte de Membre - Amikampus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5f5f;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            gap: 10px;
+            min-width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .notification-icon:hover {
+            color: #2c5f5f;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 30px 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            padding: 0 25px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: #f8f8f8;
+            color: #2c5f5f;
+        }
+
+        .sidebar-link.active {
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border-left: 3px solid #2c5f5f;
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 40px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(44, 95, 95, 0.3);
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* ===== CARD CONTAINER ===== */
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        /* ===== MEMBERSHIP CARD ===== */
+        .membership-card-wrapper {
+            perspective: 2000px;
+            height: 320px;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .membership-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .membership-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Card Front - Style inspiré des exemples */
+        .card-front {
+            background: white;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Left side - Contact Info */
+        .card-left {
+            background: #f8f9fa;
+            padding: 35px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-greeting {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .card-contact-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card-contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .card-contact-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .card-contact-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Right side - QR Code */
+        .card-right {
+            background: linear-gradient(135deg, #e8927c 0%, #d97b6a 100%);
+            padding: 35px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-member-id-top {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.9;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .card-qr-wrapper {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-qr-code {
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-qr-code svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-qr-text {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        /* Card Back - Style sombre élégant */
+        .card-back {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            transform: rotateY(180deg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(232, 146, 124, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .back-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-logo-icon {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8927c, #d97b6a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            box-shadow: 0 15px 40px rgba(232, 146, 124, 0.4);
+            position: relative;
+            z-index: 2;
+            margin-bottom: 25px;
+        }
+
+        .back-amicale-name {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+            margin-bottom: 10px;
+        }
+
+        .back-amicale-tagline {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+            position: relative;
+            z-index: 2;
+        }
+
+        .flip-button {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            color: #2c5f5f;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .flip-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card-back .flip-button {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== SIDEBAR CARDS ===== */
+        .info-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator.inactive {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        }
+
+        .status-indicator.expiring {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        }
+
+        .status-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #155724;
+            margin-bottom: 3px;
+        }
+
+        .status-indicator.inactive .status-title {
+            color: #721c24;
+        }
+
+        .status-indicator.expiring .status-title {
+            color: #856404;
+        }
+
+        .status-subtitle {
+            font-size: 12px;
+            color: #155724;
+            opacity: 0.8;
+        }
+
+        .status-indicator.inactive .status-subtitle {
+            color: #721c24;
+        }
+
+        .status-indicator.expiring .status-subtitle {
+            color: #856404;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .renew-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(44, 95, 95, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .renew-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(44, 95, 95, 0.4);
+        }
+
+        .renew-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== BENEFITS SECTION ===== */
+        .benefits-section {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .benefits-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .benefit-item:hover {
+            background: #e8f3f3;
+            transform: translateY(-3px);
+        }
+
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .benefit-content {
+            flex: 1;
+        }
+
+        .benefit-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .benefit-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* ===== HISTORY SECTION ===== */
+        .history-section {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .history-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-dot {
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2c5f5f;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #2c5f5f;
+        }
+
+        .history-dot.success {
+            background: #27ae60;
+            box-shadow: 0 0 0 2px #27ae60;
+        }
+
+        .history-content {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .history-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c5f5f;
+        }
+
+        .history-description {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            border-color: #2c5f5f;
+            color: #2c5f5f;
+            background: #e8f3f3;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .info-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .membership-card-wrapper {
+                height: 380px;
+                max-width: 100%;
+            }
+            
+            .card-greeting {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+            
+            .card-contact-section {
+                gap: 15px;
+            }
+            
+            .card-contact-label {
+                font-size: 10px;
+            }
+            
+            .card-contact-value {
+                font-size: 13px;
+            }
+            
+            .card-qr-wrapper {
+                padding: 12px;
+            }
+            
+            .card-qr-code {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .card-qr-text {
+                font-size: 12px;
+            }
+            
+            .card-left,
+            .card-right {
+                padding: 25px 20px;
+            }
+            
+            .back-logo-icon {
+                width: 100px;
+                height: 100px;
+                font-size: 50px;
+            }
+            
+            .back-amicale-name {
+                font-size: 26px;
+                letter-spacing: 2px;
+            }
+            
+            .back-amicale-tagline {
+                font-size: 11px;
+            }
+
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            .page-header {
+                padding: 25px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .info-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-section,
+            .history-section {
+                padding: 25px;
+            }
+
+            .benefits-title,
+            .history-title {
+                font-size: 20px;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card-container {
+                gap: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{{ path('app_home') }}" class="logo">Amikampus</a>
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Rechercher...">
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-icon">
+                🔔
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar-small">{{ member.firstName|first }}{{ member.lastName|first }}</div>
+                <div class="user-details">
+                    <div class="user-name">{{ member.firstName }} {{ member.lastName }}</div>
+                    <div class="user-role">Membre Étudiant</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- Main Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Principal</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_edit_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">👤</span>
+                        <span>Mon Profil</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_events') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📅</span>
+                        <span>Mes Événements</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link active">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Ma Carte</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Vie Étudiante Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vie Étudiante</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">📚</span>
+                        <span>Ressources</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_bureau') }}" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Le Bureau</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_directory') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📖</span>
+                        <span>Annuaire</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">💬</span>
+                        <span>Forum</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Account Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Compte</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_login') }}" class="sidebar-link">
+                        <span class="sidebar-icon">🚪</span>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <span>💳</span>
+                Ma Carte de Membre
+            </h1>
+            <p class="page-subtitle">Votre carte virtuelle Amikampus avec tous vos avantages</p>
+        </div>
+
+        <!-- Card Container -->
+        <div class="card-container">
+            <!-- Membership Card -->
+            <div class="membership-card-wrapper">
+                <div class="membership-card" id="membershipCard">
+                    <!-- Front of Card -->
+                    <div class="card-face card-front">
+                        <!-- Left Side - Contact Info -->
+                        <div class="card-left">
+                            <h2 class="card-greeting">Let's<br>Collaborate.</h2>
+                            
+                            <div class="card-contact-section">
+                                <div class="card-contact-item">
+                                    <div class="card-contact-label">Appelez-moi</div>
+                                    <div class="card-contact-value">{{ member.phone ?? '+33 6 12 34 56 78' }}</div>
+                                </div>
+                                
+                                <div class="card-contact-item">
+                                    <div class="card-contact-label">Écrivez-moi</div>
+                                    <div class="card-contact-value">{{ member.email ?? 'membre@amikampus.fr' }}</div>
+                                </div>
+                                
+                                <div class="card-contact-item">
+                                    <div class="card-contact-label">Formation</div>
+                                    <div class="card-contact-value">{{ member.formation ?? 'Licence Informatique' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - QR Code -->
+                        <div class="card-right">
+                            <div class="card-member-id-top">@{{ member.username ?? 'membre2025' }}</div>
+                            
+                            <div class="card-qr-wrapper">
+                                <div class="card-qr-code">
+                                    <svg width="140" height="140" viewBox="0 0 140 140">
+                                        <rect x="0" y="0" width="140" height="140" fill="white"/>
+                                        <!-- Position markers -->
+                                        <rect x="7" y="7" width="28" height="28" fill="black"/>
+                                        <rect x="14" y="14" width="14" height="14" fill="white"/>
+                                        <rect x="105" y="7" width="28" height="28" fill="black"/>
+                                        <rect x="112" y="14" width="14" height="14" fill="white"/>
+                                        <rect x="7" y="105" width="28" height="28" fill="black"/>
+                                        <rect x="14" y="112" width="14" height="14" fill="white"/>
+                                        <!-- Data pattern -->
+                                        <rect x="42" y="7" width="7" height="7" fill="black"/>
+                                        <rect x="56" y="7" width="7" height="7" fill="black"/>
+                                        <rect x="70" y="7" width="7" height="7" fill="black"/>
+                                        <rect x="42" y="21" width="7" height="7" fill="black"/>
+                                        <rect x="70" y="21" width="7" height="7" fill="black"/>
+                                        <rect x="42" y="42" width="21" height="21" fill="black"/>
+                                        <rect x="70" y="42" width="21" height="21" fill="black"/>
+                                        <rect x="98" y="42" width="7" height="7" fill="black"/>
+                                        <rect x="42" y="70" width="7" height="7" fill="black"/>
+                                        <rect x="70" y="70" width="21" height="21" fill="black"/>
+                                        <rect x="42" y="98" width="21" height="21" fill="black"/>
+                                        <rect x="70" y="98" width="7" height="7" fill="black"/>
+                                        <rect x="98" y="98" width="21" height="21" fill="black"/>
+                                        <rect x="42" y="126" width="7" height="7" fill="black"/>
+                                        <rect x="70" y="126" width="7" height="7" fill="black"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="card-qr-text">
+                                Scannez pour vérifier<br>mon statut membre
+                            </div>
+                        </div>
+
+                        <button class="flip-button" onclick="flipCard()">Voir plus →</button>
+                    </div>
+
+                    <!-- Back of Card -->
+                    <div class="card-face card-back">
+                        <div class="back-logo-container">
+                            <div class="back-logo-icon">🎓</div>
+                            <h2 class="back-amicale-name">Amikampus</h2>
+                            <div class="back-amicale-tagline">Association des Étudiants</div>
+                        </div>
+
+                        <button class="flip-button" onclick="flipCard()">← Retour</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Sidebar -->
+            <div class="info-sidebar">
+                <!-- Status Card -->
+                <div class="info-card">
+                    <h3 class="info-card-title">📊 Statut d'adhésion</h3>
+                    
+                    <div class="status-indicator">
+                        <div class="status-icon">✅</div>
+                        <div class="status-text">
+                            <div class="status-title">Carte Active</div>
+                            <div class="status-subtitle">Valide jusqu'au 31 Décembre 2025</div>
+                        </div>
+                    </div>
+
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-item-label">Date d'adhésion</span>
+                            <span class="info-item-value">01 Janvier 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">Date d'expiration</span>
+                            <span class="info-item-value">31 Décembre 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">Jours restants</span>
+                            <span class="info-item-value">46 jours</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">Type de carte</span>
+                            <span class="info-item-value">Premium</span>
+                        </div>
+                    </div>
+
+                    <button class="renew-button" disabled>
+                        <span>✓</span>
+                        <span>Carte à jour</span>
+                    </button>
+                </div>
+
+                <!-- Payment Card -->
+                <div class="info-card">
+                    <h3 class="info-card-title">💰 Cotisation annuelle</h3>
+                    
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-item-label">Montant</span>
+                            <span class="info-item-value">50,00 €</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">Statut</span>
+                            <span class="info-item-value" style="color: #27ae60;">Payé ✓</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">Prochain paiement</span>
+                            <span class="info-item-value">Janvier 2026</span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            <span>📄</span>
+                            <span>Télécharger reçu</span>
+                        </button>
+                        <button class="action-btn">
+                            <span>📧</span>
+                            <span>Envoyer par email</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="benefits-section">
+            <h2 class="benefits-title">
+                <span>⭐</span>
+                Avantages de votre carte
+            </h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎫</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Accès aux événements</div>
+                        <div class="benefit-description">Inscription gratuite à tous les événements de l'amicale</div>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">💰</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Réductions partenaires</div>
+                        <div class="benefit-description">-10% à -30% chez nos partenaires (resto, ciné, sport)</div>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">📚</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Ressources académiques</div>
+                        <div class="benefit-description">Accès à la bibliothèque de cours et documents partagés</div>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🏋️</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Activités sportives</div>
+                        <div class="benefit-description">Participation gratuite aux tournois et activités sportives</div>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">👥</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Réseau étudiant</div>
+                        <div class="benefit-description">Accès au forum privé et aux groupes d'entraide</div>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎓</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">Mentorat</div>
+                        <div class="benefit-description">Programme de mentorat avec anciens étudiants</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <h2 class="history-title">
+                <span>📜</span>
+                Historique des cotisations
+            </h2>
+            <div class="history-timeline">
+                <div class="history-item">
+                    <div class="history-dot success"></div>
+                    <div class="history-content">
+                        <div class="history-header">
+                            <span class="history-date">01 Janvier 2025</span>
+                            <span class="history-amount">50,00 €</span>
+                        </div>
+                        <div class="history-description">
+                            Cotisation annuelle 2025 - Paiement par carte bancaire - Reçu #2025001
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-dot success"></div>
+                    <div class="history-content">
+                        <div class="history-header">
+                            <span class="history-date">05 Janvier 2024</span>
+                            <span class="history-amount">45,00 €</span>
+                        </div>
+                        <div class="history-description">
+                            Cotisation annuelle 2024 - Paiement par carte bancaire - Reçu #2024042
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-dot success"></div>
+                    <div class="history-content">
+                        <div class="history-header">
+                            <span class="history-date">15 Septembre 2023</span>
+                            <span class="history-amount">45,00 €</span>
+                        </div>
+                        <div class="history-description">
+                            Première adhésion - Paiement en espèces - Reçu #2023187
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function flipCard() {
+            const card = document.getElementById('membershipCard');
+            card.classList.toggle('flipped');
+        }
+
+        // Auto-rotate card on page load (optional)
+        setTimeout(() => {
+            // Uncomment to auto-flip on load
+            // flipCard();
+        }, 1000);
+
+        // Calculate days remaining
+        function calculateDaysRemaining() {
+            const expiryDate = new Date('2025-12-31');
+            const today = new Date();
+            const diffTime = expiryDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Update in UI if needed
+            console.log('Days remaining:', diffDays);
+            
+            // Change status based on days remaining
+            const statusIndicator = document.querySelector('.status-indicator');
+            const statusTitle = document.querySelector('.status-title');
+            const statusSubtitle = document.querySelector('.status-subtitle');
+            const renewButton = document.querySelector('.renew-button');
+            
+            if (diffDays < 0) {
+                // Expired
+                statusIndicator.classList.remove('expiring');
+                statusIndicator.classList.add('inactive');
+                statusTitle.textContent = 'Carte Expirée';
+                statusSubtitle.textContent = 'Veuillez renouveler votre adhésion';
+                renewButton.disabled = false;
+                renewButton.innerHTML = '<span>🔄</span><span>Renouveler maintenant</span>';
+            } else if (diffDays <= 30) {
+                // Expiring soon
+                statusIndicator.classList.add('expiring');
+                statusTitle.textContent = 'Expire Bientôt';
+                statusSubtitle.textContent = `Plus que ${diffDays} jours restants`;
+                renewButton.disabled = false;
+                renewButton.innerHTML = '<span>🔄</span><span>Renouveler en avance</span>';
+            }
+        }
+
+        // Run on page load
+        calculateDaysRemaining();
+
+        // Download receipt
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.textContent.includes('Télécharger')) {
+                    alert('Téléchargement du reçu en cours...');
+                } else if (this.textContent.includes('email')) {
+                    alert('Reçu envoyé par email à {{ member.email }}');
+                }
+            });
+        });
+
+        // Renew button
+        document.querySelector('.renew-button').addEventListener('click', function() {
+            if (!this.disabled) {
+                // Redirect to payment page
+                alert('Redirection vers la page de paiement...');
+            }
+        });
+    </script>
+</body>
+</html>

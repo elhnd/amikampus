@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Bureau - Amikampus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5f5f;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            gap: 10px;
+            min-width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .notification-icon:hover {
+            color: #2c5f5f;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 30px 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            padding: 0 25px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: #f8f8f8;
+            color: #2c5f5f;
+        }
+
+        .sidebar-link.active {
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border-left: 3px solid #2c5f5f;
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 40px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(44, 95, 95, 0.3);
+            margin-bottom: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ===== INTRO SECTION ===== */
+        .intro-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .intro-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 15px;
+        }
+
+        .intro-text {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ===== PRESIDENT CARD ===== */
+        .president-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .president-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #2c5f5f, #5a8080);
+        }
+
+        .president-content {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .president-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(44, 95, 95, 0.3);
+            border: 5px solid white;
+            position: relative;
+        }
+
+        .president-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #333;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .president-info {
+            flex: 1;
+        }
+
+        .president-role {
+            display: inline-block;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .president-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .president-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .president-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .president-bio {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .president-contact {
+            display: flex;
+            gap: 15px;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .contact-btn.primary {
+            background: #2c5f5f;
+            color: white;
+        }
+
+        .contact-btn.primary:hover {
+            background: #1f4545;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 95, 0.3);
+        }
+
+        .contact-btn.secondary {
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border: 2px solid #2c5f5f;
+        }
+
+        .contact-btn.secondary:hover {
+            background: #2c5f5f;
+            color: white;
+        }
+
+        /* ===== BUREAU MEMBERS GRID ===== */
+        .bureau-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .member-header {
+            background: linear-gradient(135deg, #e8f3f3, #d0e5e5);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 20px rgba(44, 95, 95, 0.3);
+            border: 4px solid white;
+        }
+
+        .member-role-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            color: #2c5f5f;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .member-content {
+            padding: 25px 20px;
+        }
+
+        .member-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .member-position {
+            font-size: 14px;
+            color: #2c5f5f;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .member-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .member-info-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .member-bio {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .member-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .member-btn.contact {
+            background: #2c5f5f;
+            color: white;
+        }
+
+        .member-btn.contact:hover {
+            background: #1f4545;
+            transform: translateY(-2px);
+        }
+
+        .member-btn.profile {
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border: 2px solid #2c5f5f;
+        }
+
+        .member-btn.profile:hover {
+            background: #d0e5e5;
+        }
+
+        /* ===== STATS SECTION ===== */
+        .stats-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #e8f3f3, #f5f5f5);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c5f5f;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        .contact-section {
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            padding: 50px 40px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+        }
+
+        .contact-section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .contact-section-text {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-methods {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-method {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+
+        .contact-method:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .contact-method-icon {
+            font-size: 32px;
+        }
+
+        .contact-method-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .contact-method-value {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .president-content {
+                grid-template-columns: 150px 1fr;
+                gap: 30px;
+            }
+
+            .president-avatar {
+                width: 150px;
+                height: 150px;
+                font-size: 48px;
+            }
+
+            .president-name {
+                font-size: 28px;
+            }
+
+            .bureau-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            .page-header {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .president-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .president-avatar {
+                margin: 0 auto;
+            }
+
+            .president-details {
+                justify-content: center;
+            }
+
+            .president-contact {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .bureau-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .contact-methods {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{{ path('app_home') }}" class="logo">Amikampus</a>
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Rechercher...">
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-icon">
+                🔔
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar-small">{{ member.firstName|first }}{{ member.lastName|first }}</div>
+                <div class="user-details">
+                    <div class="user-name">{{ member.firstName }} {{ member.lastName }}</div>
+                    <div class="user-role">Membre Étudiant</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- Main Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Principal</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_edit_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">👤</span>
+                        <span>Mon Profil</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_events') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📅</span>
+                        <span>Mes Événements</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_card') }}" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Ma Carte</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Vie Étudiante Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vie Étudiante</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">📚</span>
+                        <span>Ressources</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_bureau') }}" class="sidebar-link active">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Le Bureau</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_directory') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📖</span>
+                        <span>Annuaire</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">💬</span>
+                        <span>Forum</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Account Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Compte</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_login') }}" class="sidebar-link">
+                        <span class="sidebar-icon">🚪</span>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <span>👥</span>
+                Le Bureau de l'Amicale
+            </h1>
+            <p class="page-subtitle">
+                Découvrez l'équipe qui s'engage chaque jour pour animer et dynamiser la vie étudiante de notre campus
+            </p>
+        </div>
+
+        <!-- Intro Section -->
+        <div class="intro-section">
+            <div class="intro-icon">🎓</div>
+            <h2 class="intro-title">Une équipe dévouée à votre service</h2>
+            <p class="intro-text">
+                Le bureau de l'amicale est composé d'étudiants passionnés et engagés qui œuvrent pour créer une vie associative riche et dynamique. 
+                Chaque membre apporte ses compétences et son énergie pour organiser des événements, faciliter les échanges entre étudiants, 
+                et représenter vos intérêts auprès de l'administration.
+            </p>
+        </div>
+
+        <!-- President Section -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <span>👑</span>
+                Présidence
+            </h2>
+            <p class="section-subtitle">Le pilier de notre organisation</p>
+        </div>
+
+        <div class="president-card">
+            <div class="president-content">
+                <div class="president-avatar">
+                    AM
+                    <div class="president-badge">👑</div>
+                </div>
+                <div class="president-info">
+                    <span class="president-role">🎯 Président(e) de l'Amicale</span>
+                    <h3 class="president-name">Alice Martin</h3>
+                    <div class="president-details">
+                        <div class="president-detail">
+                            <span>🎓</span>
+                            <span>Master 2 - Informatique</span>
+                        </div>
+                        <div class="president-detail">
+                            <span>📧</span>
+                            <span>alice.martin@amikampus.fr</span>
+                        </div>
+                        <div class="president-detail">
+                            <span>📱</span>
+                            <span>+33 6 12 34 56 78</span>
+                        </div>
+                    </div>
+                    <p class="president-bio">
+                        Passionnée par le développement associatif et l'animation de la vie étudiante, je m'engage depuis 3 ans 
+                        dans l'amicale. Mon objectif : créer une communauté soudée où chaque étudiant peut s'épanouir, 
+                        participer et développer ses compétences. Ensemble, faisons de cette année une expérience inoubliable !
+                    </p>
+                    <div class="president-contact">
+                        <a href="mailto:alice.martin@amikampus.fr" class="contact-btn primary">
+                            <span>📧</span>
+                            <span>Envoyer un email</span>
+                        </a>
+                        <a href="{{ path('app_member_student_profile', {id: 10}) }}" class="contact-btn secondary">
+                            <span>�</span>
+                            <span>Voir le profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bureau Members Section -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <span>✨</span>
+                Les Membres du Bureau
+            </h2>
+            <p class="section-subtitle">Une équipe complémentaire et dynamique</p>
+        </div>
+
+        <div class="bureau-grid">
+            <!-- Vice-Président -->
+            <div class="member-card" data-member-id="8">
+                <div class="member-header">
+                    <div class="member-role-badge">Vice-Président</div>
+                    <div class="member-avatar">TD</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Thomas Dubois</h3>
+                    <div class="member-position">📌 Vice-Président</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Master 1 - Commerce</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>thomas.d@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Coordination & Partenariats</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        Coordinateur des projets et gestionnaire des partenariats. Je travaille main dans la main avec le président 
+                        pour assurer le bon fonctionnement de l'amicale et développer nos relations extérieures.
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 8}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trésorier -->
+            <div class="member-card" data-member-id="2">
+                <div class="member-header">
+                    <div class="member-role-badge">Trésorier</div>
+                    <div class="member-avatar">SL</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Sophie Laurent</h3>
+                    <div class="member-position">💰 Trésorière</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Master 2 - Finance</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>sophie.l@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Gestion financière</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        Responsable de la gestion financière de l'amicale. Je m'assure de la bonne utilisation du budget, 
+                        gère les cotisations et veille à la transparence de nos comptes.
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 2}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secrétaire -->
+            <div class="member-card" data-member-id="3">
+                <div class="member-header">
+                    <div class="member-role-badge">Secrétaire</div>
+                    <div class="member-avatar">MP</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Marc Petit</h3>
+                    <div class="member-position">📝 Secrétaire</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Licence 3 - Droit</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>marc.p@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Administration & Communication</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        En charge de la rédaction des comptes-rendus, de la gestion administrative et de la communication interne. 
+                        Je veille à ce que l'information circule bien entre tous les membres.
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 3}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responsable Communication -->
+            <div class="member-card" data-member-id="4">
+                <div class="member-header">
+                    <div class="member-role-badge">Communication</div>
+                    <div class="member-avatar">EB</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Emma Bernard</h3>
+                    <div class="member-position">📱 Responsable Communication</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Master 1 - Communication</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>emma.b@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Réseaux sociaux & Visibilité</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        Créative et passionnée de digital, je gère nos réseaux sociaux, conçois les visuels de nos événements 
+                        et m'assure que notre amicale soit visible et attractive !
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 4}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responsable Événements -->
+            <div class="member-card" data-member-id="9">
+                <div class="member-header">
+                    <div class="member-role-badge">Événements</div>
+                    <div class="member-avatar">LR</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Lucas Robert</h3>
+                    <div class="member-position">🎉 Responsable Événements</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Master 1 - Management</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>lucas.r@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Organisation & Logistique</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        Organisateur né, j'adore créer des moments inoubliables ! Je coordonne tous les événements de l'amicale, 
+                        des soirées aux conférences, en passant par les tournois sportifs.
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 9}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responsable Solidarité -->
+            <div class="member-card" data-member-id="7">
+                <div class="member-header">
+                    <div class="member-role-badge">Solidarité</div>
+                    <div class="member-avatar">CM</div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Chloé Moreau</h3>
+                    <div class="member-position">❤️ Responsable Solidarité</div>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Licence 3 - Sciences Sociales</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>chloe.m@amikampus.fr</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎯</span>
+                            <span>Aide & Accompagnement</span>
+                        </div>
+                    </div>
+                    <p class="member-bio">
+                        Engagée dans l'entraide étudiante, je coordonne les actions solidaires, gère le système de parrainage 
+                        et m'assure que chaque étudiant trouve l'aide dont il a besoin.
+                    </p>
+                    <div class="member-actions">
+                        <button class="member-btn contact">
+                            <span>📧</span>
+                            <span>Contact</span>
+                        </button>
+                        <a href="{{ path('app_member_student_profile', {id: 7}) }}" class="member-btn profile">
+                            <span>👤</span>
+                            <span>Profil</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <h2 class="section-title">
+                <span>📊</span>
+                Notre Impact en Chiffres
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">Événements organisés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">850+</div>
+                    <div class="stat-label">Membres actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🤝</div>
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Partenaires</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value">4.8/5</div>
+                    <div class="stat-label">Satisfaction moyenne</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+            <h2 class="contact-section-title">💬 Contactez-nous</h2>
+            <p class="contact-section-text">
+                Une question ? Une idée ? Un projet ? N'hésitez pas à nous contacter ! 
+                Le bureau est à votre écoute et se fera un plaisir de vous répondre.
+            </p>
+            <div class="contact-methods">
+                <a href="mailto:bureau@amikampus.fr" class="contact-method">
+                    <div class="contact-method-icon">📧</div>
+                    <div class="contact-method-label">Email</div>
+                    <div class="contact-method-value">bureau@amikampus.fr</div>
+                </a>
+                <div class="contact-method">
+                    <div class="contact-method-icon">📍</div>
+                    <div class="contact-method-label">Bureau</div>
+                    <div class="contact-method-value">Bâtiment A - Salle 105</div>
+                </div>
+                <div class="contact-method">
+                    <div class="contact-method-icon">🕐</div>
+                    <div class="contact-method-label">Permanences</div>
+                    <div class="contact-method-value">Lun-Ven : 12h-14h</div>
+                </div>
+                <a href="#" class="contact-method">
+                    <div class="contact-method-icon">💬</div>
+                    <div class="contact-method-label">Discord</div>
+                    <div class="contact-method-value">Rejoindre le serveur</div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Animation au scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observer les cartes
+        document.querySelectorAll('.member-card, .stat-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s, transform 0.5s';
+            observer.observe(card);
+        });
+
+        // Gestion des boutons contact
+        document.querySelectorAll('.member-btn.contact').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const card = this.closest('.member-card');
+                const name = card.querySelector('.member-name').textContent;
+                const email = card.querySelector('.member-info-item:nth-child(2) span:last-child').textContent;
+                
+                if (confirm(`Envoyer un email à ${name} ?`)) {
+                    window.location.href = `mailto:${email}`;
+                }
+            });
+        });
+
+        // Hover effect sur les cartes membres
+        document.querySelectorAll('.member-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.querySelector('.member-avatar').style.transform = 'scale(1.1) rotate(5deg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.querySelector('.member-avatar').style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

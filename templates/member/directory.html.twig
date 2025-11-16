@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annuaire des Membres - Amikampus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5f5f;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            gap: 10px;
+            min-width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .notification-icon:hover {
+            color: #2c5f5f;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 30px 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            padding: 0 25px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: #f8f8f8;
+            color: #2c5f5f;
+        }
+
+        .sidebar-link.active {
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border-left: 3px solid #2c5f5f;
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 40px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(44, 95, 95, 0.3);
+            margin-bottom: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .header-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .header-stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== SEARCH & FILTERS ===== */
+        .filters-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8f8f8;
+            padding: 15px 20px;
+            border-radius: 12px;
+            gap: 15px;
+            margin-bottom: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus-within {
+            background: white;
+            border-color: #2c5f5f;
+            box-shadow: 0 0 0 3px rgba(44, 95, 95, 0.1);
+        }
+
+        .search-icon {
+            font-size: 20px;
+            color: #666;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            border-color: #2c5f5f;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: #e8f3f3;
+            color: #2c5f5f;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .filter-tag:hover {
+            background: #d0e5e5;
+        }
+
+        .filter-tag.active {
+            background: #2c5f5f;
+            color: white;
+        }
+
+        .clear-filters {
+            padding: 8px 16px;
+            background: transparent;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clear-filters:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* ===== MEMBERS GRID ===== */
+        .members-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .member-header {
+            background: linear-gradient(135deg, #e8f3f3, #d0e5e5);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c5f5f, #5a8080);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto;
+            box-shadow: 0 5px 20px rgba(44, 95, 95, 0.3);
+            border: 4px solid white;
+            position: relative;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .online-indicator.online {
+            background: #27ae60;
+        }
+
+        .online-indicator.offline {
+            background: #95a5a6;
+        }
+
+        .member-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .member-badge.verified {
+            color: #2196f3;
+        }
+
+        .member-badge.premium {
+            color: #ff9800;
+        }
+
+        .member-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .member-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .member-title {
+            font-size: 13px;
+            color: #2c5f5f;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .member-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .member-info-icon {
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+            color: #2c5f5f;
+        }
+
+        .member-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .skill-badge {
+            padding: 4px 10px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .member-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: auto;
+        }
+
+        .member-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .member-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c5f5f;
+        }
+
+        .member-stat-label {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #666;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+            border-color: #2c5f5f;
+            color: #2c5f5f;
+        }
+
+        .page-btn.active {
+            background: #2c5f5f;
+            color: white;
+            border-color: #2c5f5f;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .btn-primary {
+            padding: 12px 30px;
+            background: #2c5f5f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #1f4545;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 95, 95, 0.3);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .members-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            .page-header {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .header-stats {
+                gap: 30px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .members-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{{ path('app_home') }}" class="logo">Amikampus</a>
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Rechercher un membre...">
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-icon">
+                🔔
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar-small">{{ member.firstName|first }}{{ member.lastName|first }}</div>
+                <div class="user-details">
+                    <div class="user-name">{{ member.firstName }} {{ member.lastName }}</div>
+                    <div class="user-role">Membre Étudiant</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- Main Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Principal</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_edit_profile') }}" class="sidebar-link">
+                        <span class="sidebar-icon">👤</span>
+                        <span>Mon Profil</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_events') }}" class="sidebar-link">
+                        <span class="sidebar-icon">📅</span>
+                        <span>Mes Événements</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_card') }}" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Ma Carte</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Vie Étudiante Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vie Étudiante</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">📚</span>
+                        <span>Ressources</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_bureau') }}" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Le Bureau</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_directory') }}" class="sidebar-link active">
+                        <span class="sidebar-icon">📖</span>
+                        <span>Annuaire</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">💬</span>
+                        <span>Forum</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Account Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Compte</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ path('app_member_login') }}" class="sidebar-link">
+                        <span class="sidebar-icon">🚪</span>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <span>📖</span>
+                Annuaire des Membres
+            </h1>
+            <p class="page-subtitle">
+                Découvrez tous les membres de l'amicale étudiante. Connectez-vous, échangez et créez votre réseau !
+            </p>
+            
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="header-stat-value">850+</div>
+                    <div class="header-stat-label">Membres actifs</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value">45</div>
+                    <div class="header-stat-label">Formations</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value">320</div>
+                    <div class="header-stat-label">En ligne</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="filters-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Rechercher par nom, formation, compétence..." id="searchInput">
+            </div>
+
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Formation</label>
+                    <select class="filter-select" id="formationFilter">
+                        <option value="">Toutes les formations</option>
+                        <option value="informatique">Informatique</option>
+                        <option value="commerce">Commerce</option>
+                        <option value="droit">Droit</option>
+                        <option value="medecine">Médecine</option>
+                        <option value="ingenierie">Ingénierie</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Niveau</label>
+                    <select class="filter-select" id="levelFilter">
+                        <option value="">Tous les niveaux</option>
+                        <option value="licence">Licence</option>
+                        <option value="master">Master</option>
+                        <option value="doctorat">Doctorat</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Année</label>
+                    <select class="filter-select" id="yearFilter">
+                        <option value="">Toutes les années</option>
+                        <option value="1">1ère année</option>
+                        <option value="2">2ème année</option>
+                        <option value="3">3ème année</option>
+                        <option value="4">4ème année</option>
+                        <option value="5">5ème année</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Statut</label>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">Tous</option>
+                        <option value="online">En ligne</option>
+                        <option value="offline">Hors ligne</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-tags">
+                <span class="filter-tag">🎯 Tous</span>
+                <span class="filter-tag">💻 Tech</span>
+                <span class="filter-tag">🎨 Design</span>
+                <span class="filter-tag">📊 Business</span>
+                <span class="filter-tag">🔬 Sciences</span>
+                <span class="filter-tag">🎭 Arts</span>
+                <button class="clear-filters" onclick="clearFilters()">✕ Effacer les filtres</button>
+            </div>
+        </div>
+
+        <!-- Members Grid -->
+        <div class="members-container" id="membersContainer">
+            <!-- Member Card 1 -->
+            <a href="{{ path('app_member_student_profile', {id: 1}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge verified">✓ Vérifié</span>
+                    <div class="member-avatar">
+                        LM
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Lucas Moreau</h3>
+                    <p class="member-title">Master 2 Informatique</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Développement Web & IA</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Paris, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>lucas.m@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">JavaScript</span>
+                        <span class="skill-badge">React</span>
+                        <span class="skill-badge">Python</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">156</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">23</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.9</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 2 -->
+            <a href="{{ path('app_member_student_profile', {id: 2}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge premium">⭐ Premium</span>
+                    <div class="member-avatar">
+                        SL
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Sophie Laurent</h3>
+                    <p class="member-title">Master 2 Finance</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Finance & Gestion</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Lyon, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>sophie.l@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Excel</span>
+                        <span class="skill-badge">SAP</span>
+                        <span class="skill-badge">Audit</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">234</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">18</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.8</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 3 -->
+            <a href="{{ path('app_member_student_profile', {id: 3}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge verified">✓ Vérifié</span>
+                    <div class="member-avatar">
+                        MP
+                        <div class="online-indicator offline"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Marc Petit</h3>
+                    <p class="member-title">Licence 3 Droit</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Droit des Affaires</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Bordeaux, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>marc.p@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Contrats</span>
+                        <span class="skill-badge">Fiscal</span>
+                        <span class="skill-badge">Juridique</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">98</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">15</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.7</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 4 -->
+            <a href="{{ path('app_member_student_profile', {id: 4}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge verified">✓ Vérifié</span>
+                    <div class="member-avatar">
+                        EB
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Emma Bernard</h3>
+                    <p class="member-title">Master 1 Communication</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Marketing Digital</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Paris, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>emma.b@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Photoshop</span>
+                        <span class="skill-badge">SEO</span>
+                        <span class="skill-badge">Social Media</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">312</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">42</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">5.0</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 5 -->
+            <a href="{{ path('app_member_student_profile', {id: 5}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge premium">⭐ Premium</span>
+                    <div class="member-avatar">
+                        LR
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Léa Richard</h3>
+                    <p class="member-title">Master 2 Design</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>UX/UI Design</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Lille, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>lea.r@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Figma</span>
+                        <span class="skill-badge">Sketch</span>
+                        <span class="skill-badge">Adobe XD</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">189</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">27</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.9</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 6 -->
+            <a href="{{ path('app_member_student_profile', {id: 6}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge verified">✓ Vérifié</span>
+                    <div class="member-avatar">
+                        AM
+                        <div class="online-indicator offline"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Antoine Martin</h3>
+                    <p class="member-title">Licence 2 Médecine</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Médecine Générale</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Toulouse, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>antoine.m@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Anatomie</span>
+                        <span class="skill-badge">Pharmacologie</span>
+                        <span class="skill-badge">Clinique</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">145</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">12</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.6</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 7 -->
+            <a href="{{ path('app_member_student_profile', {id: 7}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge verified">✓ Vérifié</span>
+                    <div class="member-avatar">
+                        CM
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Chloé Moreau</h3>
+                    <p class="member-title">Licence 3 Sciences Sociales</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Sociologie</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Marseille, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>chloe.m@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Enquête</span>
+                        <span class="skill-badge">SPSS</span>
+                        <span class="skill-badge">Ethnographie</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">178</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">31</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">4.8</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Member Card 8 -->
+            <a href="{{ path('app_member_student_profile', {id: 8}) }}" class="member-card">
+                <div class="member-header">
+                    <span class="member-badge premium">⭐ Premium</span>
+                    <div class="member-avatar">
+                        TD
+                        <div class="online-indicator online"></div>
+                    </div>
+                </div>
+                <div class="member-content">
+                    <h3 class="member-name">Thomas Dubois</h3>
+                    <p class="member-title">Master 1 Commerce</p>
+                    <div class="member-info">
+                        <div class="member-info-item">
+                            <span class="member-info-icon">🎓</span>
+                            <span>Management International</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📍</span>
+                            <span>Nice, France</span>
+                        </div>
+                        <div class="member-info-item">
+                            <span class="member-info-icon">📧</span>
+                            <span>thomas.d@university.fr</span>
+                        </div>
+                    </div>
+                    <div class="member-skills">
+                        <span class="skill-badge">Négociation</span>
+                        <span class="skill-badge">Stratégie</span>
+                        <span class="skill-badge">CRM</span>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-value">267</div>
+                            <div class="member-stat-label">Amis</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">38</div>
+                            <div class="member-stat-label">Événements</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-value">5.0</div>
+                            <div class="member-stat-label">Note</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn" disabled>← Précédent</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn">Suivant →</button>
+        </div>
+    </main>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Recherche:', searchTerm);
+            // TODO: Implement actual search filtering
+        });
+
+        // Filter functionality
+        const filters = ['formationFilter', 'levelFilter', 'yearFilter', 'statusFilter'];
+        filters.forEach(filterId => {
+            document.getElementById(filterId).addEventListener('change', function(e) {
+                console.log(`${filterId}:`, e.target.value);
+                // TODO: Implement actual filtering
+            });
+        });
+
+        // Filter tags
+        document.querySelectorAll('.filter-tag:not(.clear-filters)').forEach(tag => {
+            tag.addEventListener('click', function() {
+                // Remove active from all
+                document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                // Add active to clicked
+                this.classList.add('active');
+                console.log('Filtre tag:', this.textContent);
+            });
+        });
+
+        // Clear filters
+        function clearFilters() {
+            searchInput.value = '';
+            filters.forEach(filterId => {
+                document.getElementById(filterId).selectedIndex = 0;
+            });
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            document.querySelector('.filter-tag').classList.add('active');
+            console.log('Filtres effacés');
+        }
+
+        // Pagination
+        document.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.textContent.includes('←') && !this.textContent.includes('→')) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+                console.log('Page:', this.textContent);
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe member cards
+        document.querySelectorAll('.member-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s, transform 0.5s';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
